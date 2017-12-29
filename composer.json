@@ -1,0 +1,27 @@
+{
+    "name": "dkozickis/otus-bracket-helper-console",
+    "description": "Otus.ru PHP Course bracket balance console",
+    "type": "project",
+    "license": "Apache License 2.0",
+    "authors": [
+        {
+            "name": "Deniss Kozickis",
+            "email": "deniss.kozickis@gmail.com"
+        }
+    ],
+    "require": {
+        "dkozickis/otus-bracket-helper": "^1.0",
+        "symfony/console": "^4.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "~2.2"
+    },
+    "scripts": {
+        "lint": "vendor/bin/php-cs-fixer fix"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dkozickis\\": "src/"
+        }
+    }
+}
