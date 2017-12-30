@@ -31,13 +31,21 @@ class BracketHelperCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io = new SymfonyStyle($input, $output);
         $bracketHelper = new BracketHelper();
+        $io = new SymfonyStyle($input, $output);
+        $file = $input->getArgument('file');
 
-        $content = @file_get_contents($input->getArgument('file'));
+        if (!file_exists($file)) {
+            $io->error('Такого файла нет');
 
-        if (false === $content) {
-            $io->error('В файле нет содержимого');
+            return;
+        }
+
+        $content = file_get_contents($file);
+
+        //Если строка пустая, значит, что кол-во открытых и закрытых скобок было одинаково ;)
+        if ('' === $content) {
+            $io->success('Файл содержит ПРАВИЛЬНУЮ строку (пустая строка)');
 
             return;
         }
