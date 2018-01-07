@@ -20,6 +20,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class BracketHelperCommand extends Command
 {
+    /**
+     * @var SymfonyStyle
+     */
+    private $io;
+
     protected function configure()
     {
         $this
@@ -29,14 +34,46 @@ class BracketHelperCommand extends Command
             ->addArgument('file', InputArgument::REQUIRED, 'Файл, содержимое которого надо проверить');
     }
 
+    protected function initialize(InputInterface $input, OutputInterface $output)
+    {
+        $this->io = new SymfonyStyle($input, $output);
+    }
+
+    protected function interact(InputInterface $input, OutputInterface $output)
+    {
+        if (null !== $input->getArgument('file')) {
+            return;
+        }
+
+        $this->io->title('Автоматический проверятор консоли');
+        $this->io->text(
+            [
+                'Вы не ввели единственный аргумент для консоли - file',
+                'Поэтому введите его сейчас',
+            ]
+        );
+
+        $file = $this->io->ask(
+            'Введите имя файла',
+            null,
+            function ($answer) {
+                if ('' === $answer || !is_string($answer)) {
+                    throw new \RuntimeException('Имя файла не может быть пустым');
+                }
+
+                return $answer;
+            }
+        );
+        $input->setArgument('file', $file);
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $bracketHelper = new BracketHelper();
-        $io = new SymfonyStyle($input, $output);
         $file = $input->getArgument('file');
 
-        if (!file_exists($file)) {
-            $io->error('Такого файла нет');
+        if (!file_exists($file) || !is_file($file)) {
+            $this->io->error('Такого файла нет');
 
             return;
         }
@@ -45,7 +82,7 @@ class BracketHelperCommand extends Command
 
         //Если строка пустая, значит, что кол-во открытых и закрытых скобок было одинаково ;)
         if ('' === $content) {
-            $io->success('Файл содержит ПРАВИЛЬНУЮ строку (пустая строка)');
+            $this->io->success('Файл содержит ПРАВИЛЬНУЮ строку (пустая строка)');
 
             return;
         }
@@ -54,12 +91,12 @@ class BracketHelperCommand extends Command
             $fileStatus = $bracketHelper->isValid($content);
 
             if (true === $fileStatus) {
-                $io->success('Файл содержит ПРАВИЛЬНУЮ строку');
+                $this->io->success('Файл содержит ПРАВИЛЬНУЮ строку');
             } else {
-                $io->error('Файл содержит НЕПРАВИЛЬНУЮ строку');
+                $this->io->error('Файл содержит НЕПРАВИЛЬНУЮ строку');
             }
         } catch (\InvalidArgumentException $exception) {
-            $io->error('Файл содержит недопустимые символы');
+            $this->io->error('Файл содержит недопустимые символы');
         }
     }
 }

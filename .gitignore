@@ -1,4 +1,5 @@
 vendor
 .php_cs.cache
 box.phar
-test*
+!/tests
+test.*

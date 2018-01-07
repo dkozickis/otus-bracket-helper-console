@@ -1,0 +1,25 @@
+#!/usr/bin/env php
+<?php
+
+/*
+ * This file is part of the bracket-helper project for otus.ru studies.
+ *
+ * (c) Deniss Kozickis <deniss.kozickis@gmail.com>
+ *
+ * Use and reuse as much as you want.
+ * Distributed under Apache License 2.0
+ */
+
+namespace Dkozickis;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use Dkozickis\Command\BracketHelperCommand;
+use Symfony\Component\Console\Application;
+
+$application = new Application();
+$application->add(new BracketHelperCommand())
+    ->getApplication()
+    ->setDefaultCommand('check-file', true);
+
+$application->run();
